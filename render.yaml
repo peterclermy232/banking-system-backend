@@ -1,0 +1,67 @@
+services:
+  - type: web
+    name: sacco-banking-api
+    runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    dockerfilePath: ./Dockerfile
+
+    envVars:
+      # Database config
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: SUPABASE_DB_URL
+        value: jdbc:postgresql://db.qpvcxrywpyaithlpwprz.supabase.co:5432/postgres
+      - key: SUPABASE_DB_USERNAME
+        value: postgres
+      - key: SUPABASE_DB_PASSWORD
+        sync: false  # set in Render dashboard
+
+      # Supabase
+      - key: SUPABASE_URL
+        value: https://qpvcxrywpyaithlpwprz.supabase.co
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: SUPABASE_JWT_ISSUER
+        value: https://qpvcxrywpyaithlpwprz.supabase.co/auth/v1
+
+      # JWT
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRATION
+        value: "86400000"
+
+      # M-Pesa Mock API
+      - key: MPESA_API_URL
+        value: https://darajambili.herokuapp.com/mpesa
+      - key: MPESA_CONSUMER_KEY
+        sync: false
+      - key: MPESA_CONSUMER_SECRET
+        sync: false
+      - key: MPESA_PASSKEY
+        sync: false
+      - key: MPESA_SHORTCODE
+        value: "174379"
+
+      # JVM options (optional tuning)
+      - key: JAVA_OPTS
+        value: -Xmx400m -Xms200m -XX:+UseG1GC
+
+    healthCheckPath: /api/v1/actuator/health
+
+    buildFilter:
+      paths:
+        - src/**
+        - pom.xml
+        - mvnw
+        - .mvn/**
+        - Dockerfile
+      ignoredPaths:
+        - src/test/**
+        - "**/*.md"
+        - docs/**
+
+    autoDeploy: true

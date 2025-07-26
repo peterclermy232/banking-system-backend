@@ -1,0 +1,71 @@
+# Build artifacts
+target/
+!target/*.jar
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+.mvn/wrapper/maven-wrapper.properties
+
+# IDE files
+.idea/
+.vscode/
+*.iml
+*.iws
+*.ipr
+.settings/
+.project
+.classpath
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Logs
+*.log
+logs/
+log/
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Documentation
+README.md
+*.md
+docs/
+
+# Docker files (avoid recursive copying)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Test files
+src/test/
+**/test/
+
+# Package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
