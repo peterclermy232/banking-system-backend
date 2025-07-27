@@ -6,15 +6,17 @@ server:
 spring:
   application:
     name: sacco-banking-system
+
   datasource:
-    url: jdbc:postgresql://ep-soft-bar-afkxow8k-pooler.c-2.us-west-2.aws.neon.tech:5432/neondb?sslmode=require
-    username: neondb_owner
-    password: npg_2kVFGq3uQSoW
+    url: ${NEON_DB_URL}
+    username: ${NEON_DB_USERNAME}
+    password: ${NEON_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
       connection-timeout: 30000
       maximum-pool-size: 5
       minimum-idle: 1
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -24,20 +26,17 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
 
-# JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:your-very-secure-secret-key-here}
-  expiration: 86400000 # 24 hours
+  secret: ${JWT_SECRET:default-secret}
+  expiration: ${JWT_EXPIRATION:86400000}
 
-# M-Pesa Configuration
 mpesa:
   api-url: ${MPESA_API_URL:https://sandbox.safaricom.co.ke}
-  consumer-key: ${MPESA_CONSUMER_KEY:your-consumer-key}
-  consumer-secret: ${MPESA_CONSUMER_SECRET:your-consumer-secret}
-  passkey: ${MPESA_PASSKEY:your-passkey}
+  consumer-key: ${MPESA_CONSUMER_KEY:default-key}
+  consumer-secret: ${MPESA_CONSUMER_SECRET:default-secret}
+  passkey: ${MPESA_PASSKEY:default-pass}
   shortcode: ${MPESA_SHORTCODE:174379}
 
-# Logging
 logging:
   level:
     com.sacco.banking: DEBUG
