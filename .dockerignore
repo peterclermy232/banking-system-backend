@@ -54,7 +54,7 @@ docs/
 
 # Docker files (avoid recursive copying)
 Dockerfile*
-docker-compose*.yml
+docker-compose-local.yml
 .dockerignore
 
 # Test files

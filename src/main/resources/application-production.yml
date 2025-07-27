@@ -6,20 +6,18 @@ server:
 spring:
   application:
     name: sacco-banking-system
-
   datasource:
-    url: jdbc:postgresql://db.qpvcxrywpyaithlpwprz.supabase.co:5432/postgres
-    username: postgres
-    password: Yagnesh!2
+    url: ${NEON_DB_URL}
+    username: ${NEON_DB_USERNAME}
+    password: ${NEON_DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 3
+      connection-timeout: 30000
+      maximum-pool-size: 5  # Reduced for free tier
       minimum-idle: 1
-      connection-timeout: 20000
       idle-timeout: 300000
-      max-lifetime: 1200000
+      max-lifetime: 600000
       leak-detection-threshold: 60000
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -29,38 +27,42 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: false
         jdbc:
-          time_zone: UTC
+          batch_size: 25
+        order_inserts: true
+        order_updates: true
 
 # JWT Configuration
 jwt:
   secret: ${JWT_SECRET}
-  expiration: 86400000 # 24 hours
+  expiration: ${JWT_EXPIRATION:86400000}
 
 # M-Pesa Configuration
 mpesa:
-  api-url: ${MPESA_API_URL:https://sandbox.safaricom.co.ke}
-  consumer-key: ${MPESA_CONSUMER_KEY:your-consumer-key}
-  consumer-secret: ${MPESA_CONSUMER_SECRET:your-consumer-secret}
-  passkey: ${MPESA_PASSKEY:your-passkey}
-  shortcode: ${MPESA_SHORTCODE:174379}
+  api-url: ${MPESA_API_URL}
+  consumer-key: ${MPESA_CONSUMER_KEY}
+  consumer-secret: ${MPESA_CONSUMER_SECRET}
+  passkey: ${MPESA_PASSKEY}
+  shortcode: ${MPESA_SHORTCODE}
 
-# Actuator endpoints
+# Actuator for health checks
 management:
   endpoints:
     web:
       exposure:
         include: health,info
+      base-path: /actuator
   endpoint:
     health:
-      show-details: never
+      show-details: when-authorized
+  server:
+    port: ${PORT:8080}
 
-# Production logging
+# Logging optimized for both Render and local testing
 logging:
   level:
     com.sacco.banking: INFO
     org.springframework.security: WARN
-    org.hibernate.SQL: WARN
-    org.springframework.web: WARN
-    root: WARN
+    org.hibernate.SQL: DEBUG  # Enable for local testing
+    org.hibernate.type.descriptor.sql.BasicBinder: WARN
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"

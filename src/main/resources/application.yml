@@ -1,23 +1,20 @@
 server:
-  port: 8084
+  port: 8080
   servlet:
     context-path: /api/v1
 
 spring:
   application:
     name: sacco-banking-system
-
   datasource:
-    url: jdbc:postgresql://db.qpvcxrywpyaithlpwprz.supabase.co:5432/postgres
-    username: postgres
-    password: Yagnesh!2
+    url: jdbc:postgresql://ep-soft-bar-afkxow8k-pooler.c-2.us-west-2.aws.neon.tech:5432/neondb?sslmode=require
+    username: neondb_owner
+    password: npg_2kVFGq3uQSoW
     driver-class-name: org.postgresql.Driver
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
-      idle-timeout: 300000
-      connection-timeout: 20000
-
+      connection-timeout: 30000
+      maximum-pool-size: 5
+      minimum-idle: 1
   jpa:
     hibernate:
       ddl-auto: update
@@ -26,15 +23,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        jdbc:
-          time_zone: UTC
 
 # JWT Configuration
 jwt:
-  secret: ${JWT_SECRET:your-very-secure-secret-key-at-least-32-characters-long-for-production}
+  secret: ${JWT_SECRET:your-very-secure-secret-key-here}
   expiration: 86400000 # 24 hours
 
-# M-Pesa Configuration (Optional - for M-Pesa integration)
+# M-Pesa Configuration
 mpesa:
   api-url: ${MPESA_API_URL:https://sandbox.safaricom.co.ke}
   consumer-key: ${MPESA_CONSUMER_KEY:your-consumer-key}
@@ -42,21 +37,7 @@ mpesa:
   passkey: ${MPESA_PASSKEY:your-passkey}
   shortcode: ${MPESA_SHORTCODE:174379}
 
-# Actuator endpoints
-management:
-  endpoints:
-    web:
-      exposure:
-        include: health,info
-  endpoint:
-    health:
-      show-details: when-authorized
-
 # Logging
 logging:
   level:
-    com.sacco.banking: INFO
-    org.springframework.security: WARN
-    org.hibernate.SQL: WARN
-  pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+    com.sacco.banking: DEBUG

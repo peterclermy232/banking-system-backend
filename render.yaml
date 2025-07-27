@@ -3,52 +3,42 @@ services:
     name: sacco-banking-api
     runtime: docker
     plan: free
-    region: singapore
+    region: singapore  # Options: singapore, frankfurt, oregon, virginia
     branch: main
     dockerfilePath: ./Dockerfile
 
     envVars:
-      # Database config
+      # Database config - Updated for Neon
       - key: SPRING_PROFILES_ACTIVE
         value: production
-      - key: SUPABASE_DB_URL
-        value: jdbc:postgresql://db.qpvcxrywpyaithlpwprz.supabase.co:5432/postgres
-      - key: SUPABASE_DB_USERNAME
-        value: postgres
-      - key: SUPABASE_DB_PASSWORD
-        sync: false  # set in Render dashboard
+      - key: NEON_DB_URL
+        value: jdbc:postgresql://ep-soft-bar-afkxow8k-pooler.c-2.us-west-2.aws.neon.tech:5432/neondb?sslmode=require
+      - key: NEON_DB_USERNAME
+        value: neondb_owner
+      - key: NEON_DB_PASSWORD
+        sync: false  # set in Render dashboard as: npg_2kVFGq3uQSoW
 
-      # Supabase
-      - key: SUPABASE_URL
-        value: https://qpvcxrywpyaithlpwprz.supabase.co
-      - key: SUPABASE_ANON_KEY
-        sync: false
-      - key: SUPABASE_SERVICE_KEY
-        sync: false
-      - key: SUPABASE_JWT_ISSUER
-        value: https://qpvcxrywpyaithlpwprz.supabase.co/auth/v1
-
-      # JWT
+      # JWT Configuration
       - key: JWT_SECRET
-        sync: false
+        sync: false  # set a strong secret in Render dashboard
       - key: JWT_EXPIRATION
         value: "86400000"
 
-      # M-Pesa Mock API
+      # M-Pesa Configuration
       - key: MPESA_API_URL
-        value: https://darajambili.herokuapp.com/mpesa
+        value: https://sandbox.safaricom.co.ke  # or your preferred M-Pesa API URL
       - key: MPESA_CONSUMER_KEY
-        sync: false
+        sync: false  # set in Render dashboard
       - key: MPESA_CONSUMER_SECRET
-        sync: false
+        sync: false  # set in Render dashboard
       - key: MPESA_PASSKEY
-        sync: false
+        sync: false  # set in Render dashboard
       - key: MPESA_SHORTCODE
         value: "174379"
 
-      # JVM options (optional tuning)
+      # JVM options for Render's free tier
       - key: JAVA_OPTS
-        value: -Xmx400m -Xms200m -XX:+UseG1GC
+        value: -Xmx400m -Xms200m -XX:+UseG1GC -XX:MaxGCPauseMillis=100
 
     healthCheckPath: /api/v1/actuator/health
 
@@ -59,9 +49,11 @@ services:
         - mvnw
         - .mvn/**
         - Dockerfile
+        - application*.yml
       ignoredPaths:
         - src/test/**
         - "**/*.md"
         - docs/**
+        - "**/.git/**"
 
     autoDeploy: true
