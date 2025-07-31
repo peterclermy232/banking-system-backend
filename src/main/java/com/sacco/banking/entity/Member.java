@@ -1,14 +1,14 @@
 package com.sacco.banking.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,61 +17,86 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Member {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    @NotBlank(message = "Member number is required")
+    @Column(name = "member_number", unique = true, nullable = false)
     private String memberNumber;
 
-    @NotBlank(message = "First name is required")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @NotBlank(message = "Last name is required")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Email(message = "Valid email is required")
-    @Column(unique = true)
+    @Column(name = "email", unique = true)
     private String email;
 
-    @NotBlank(message = "Phone number is required")
+    @Column(name = "phone_number")
     private String phoneNumber;
 
-    @NotBlank(message = "Password is required")
-    private String password;
+    @Column(name = "id_number", unique = true)
+    private String idNumber;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal shareCapital = BigDecimal.ZERO;
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(name = "address")
+    private String address;
 
     @Enumerated(EnumType.STRING)
-    private MemberStatus status = MemberStatus.ACTIVE;
+    @Column(name = "status", nullable = false)
+    private MemberStatus status;
 
-    @Column(precision = 3, scale = 0)
-    private Integer creditScore = 700;
+    @Column(name = "registration_date", nullable = false)
+    private LocalDateTime registrationDate;
 
-    private String nationalId;
-    private String address;
-    private String occupation;
-    private LocalDateTime dateJoined;
+    @Column(name = "updated_date")
+    private LocalDateTime updatedDate;
 
     @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Account> accounts;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Loan> loans;
+    private LocalDateTime lastLoginDate;
 
-    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<SavingsGoal> savingsGoals;
+    private String password;
+    private String nationalId;
+    private String occupation;
+    private LocalDateTime dateJoined;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @Column(name = "share_capital", nullable = false)
+    private BigDecimal shareCapital;
 
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
+    private int creditScore; // Make sure this field exists
+
+    public void setCreditScore(int creditScore) {
+        this.creditScore = creditScore;
+    }
+
+    public int getCreditScore() {
+        return creditScore;
+    }
+
 
     public enum MemberStatus {
-        ACTIVE, INACTIVE, SUSPENDED
+        ACTIVE,
+        INACTIVE,
+        SUSPENDED,
+        TERMINATED
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        registrationDate = LocalDateTime.now();
+        updatedDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedDate = LocalDateTime.now();
     }
 }

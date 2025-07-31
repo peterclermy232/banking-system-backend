@@ -24,7 +24,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Savings", description = "Savings and goals management APIs")
 @SecurityRequirement(name = "Bearer Authentication")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class SavingsController {
 
     private final SavingsService savingsService;

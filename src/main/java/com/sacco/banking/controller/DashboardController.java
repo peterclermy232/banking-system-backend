@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Tag(name = "Dashboard", description = "Dashboard management APIs")
 @SecurityRequirement(name = "Bearer Authentication")
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(originPatterns = "*", maxAge = 3600) // Fixed: Use originPatterns instead of origins
 public class DashboardController {
 
     private final DashboardService dashboardService;
@@ -27,6 +27,10 @@ public class DashboardController {
     @GetMapping
     @Operation(summary = "Get dashboard data", description = "Retrieve member dashboard information")
     public ResponseEntity<DashboardResponse> getDashboard(@AuthenticationPrincipal UserPrincipal userPrincipal) {
+        if (userPrincipal == null) {
+            return ResponseEntity.status(401).build(); // or return custom error response
+        }
+
         Member member = memberRepository.findByMemberNumber(userPrincipal.getMemberNumber())
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 

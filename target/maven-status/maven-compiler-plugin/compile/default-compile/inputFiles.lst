@@ -5,7 +5,9 @@
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/response/LoanResponse.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/security/JwtAuthenticationFilter.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/response/LoanCalculationResponse.java
+/Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/security/CorsConfig.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/entity/Member.java
+/Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/controller/TestController.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/response/DashboardResponse.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/request/LoanCalculationRequest.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/response/AccountSummaryResponse.java
@@ -14,7 +16,6 @@
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/request/SavingsGoalRequest.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/response/AuthResponse.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/entity/SavingsGoal.java
-/Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/config/CorsConfig.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/security/JwtAuthenticationEntryPoint.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/entity/Account.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/controller/MemberController.java
@@ -23,6 +24,7 @@
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/exception/BadRequestException.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/response/TransactionResponse.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/entity/Loan.java
+/Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/controller/HealthController.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/service/MpesaService.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/controller/AuthController.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/security/UserPrincipal.java
@@ -48,7 +50,6 @@
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/repository/LoanRepository.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/request/SavingsDepositRequest.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/controller/LoanController.java
-/Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/config/OpenApiConfig.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/exception/ErrorResponse.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/dto/request/LoginRequest.java
 /Users/peteratito/Downloads/sacco-banking/src/main/java/com/sacco/banking/config/WebClientConfig.java

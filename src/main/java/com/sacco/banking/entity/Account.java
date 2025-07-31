@@ -1,65 +1,83 @@
 package com.sacco.banking.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "accounts")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Account {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "account_number", unique = true, nullable = false)
     private String accountNumber;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "account_type", nullable = false)
     private AccountType accountType;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal balance = BigDecimal.ZERO;
+    @Column(name = "balance", precision = 15, scale = 2, nullable = false)
+    private BigDecimal balance;
 
-    @Column(precision = 15, scale = 2)
-    private BigDecimal minimumBalance = BigDecimal.ZERO;
+    @Column(name = "minimum_balance", precision = 15, scale = 2)
+    private BigDecimal minimumBalance;
 
-    @Column(precision = 5, scale = 4)
-    private BigDecimal interestRate = BigDecimal.ZERO;
+    @Column(name = "interest_rate", precision = 5, scale = 4)
+    private BigDecimal interestRate;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus status = AccountStatus.ACTIVE;
+    @Column(name = "status", nullable = false)
+    private AccountStatus status;
+
+    @Column(name = "created_date", nullable = false)
+    private LocalDateTime createdDate;
+
+    @Column(name = "updated_date", nullable = false)
+    private LocalDateTime updatedDate;
+
+    @Column(name = "closed_date")
+    private LocalDateTime closedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
-    @OneToMany(mappedBy = "fromAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Transaction> outgoingTransactions;
-
-    @OneToMany(mappedBy = "toAccount", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Transaction> incomingTransactions;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
     public enum AccountType {
-        SAVINGS, CURRENT, FIXED_DEPOSIT, SHARE_CAPITAL
+        SAVINGS,
+        CURRENT,
+        SHARE_CAPITAL,
+        FIXED_DEPOSIT
     }
 
     public enum AccountStatus {
-        ACTIVE, INACTIVE, FROZEN, CLOSED
+        ACTIVE,
+        INACTIVE,
+        FROZEN,
+        BLOCKED,
+        CLOSED,
+        SUSPENDED
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdDate = LocalDateTime.now();
+        updatedDate = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedDate = LocalDateTime.now();
     }
 }

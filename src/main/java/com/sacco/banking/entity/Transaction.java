@@ -1,10 +1,10 @@
 package com.sacco.banking.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -14,25 +14,53 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Transaction {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "transaction_id", unique = true, nullable = false)
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_type", nullable = false)
     private TransactionType transactionType;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "amount", precision = 15, scale = 2, nullable = false)
     private BigDecimal amount;
 
-    @Column(precision = 15, scale = 2)
+    @Column(name = "fee", precision = 15, scale = 2)
     private BigDecimal fee = BigDecimal.ZERO;
 
+    @Column(name = "description")
     private String description;
+
+    @Column(name = "reference")
     private String reference;
+
+    @Column(name = "external_reference")
+    private String externalReference;
+
+    @Column(name = "mpesa_receipt_number")
+    private String mpesaReceiptNumber;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private TransactionStatus status;
+
+    @Column(name = "failure_reason")
+    private String failureReason;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = "processed_at")
+    private LocalDateTime processedAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "from_account_id")
@@ -42,22 +70,63 @@ public class Transaction {
     @JoinColumn(name = "to_account_id")
     private Account toAccount;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionStatus status = TransactionStatus.PENDING;
-
-    private String mpesaReceiptNumber;
-    private String externalReference;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "savings_goal_id")
+    private SavingsGoal savingsGoal;
 
     public enum TransactionType {
-        DEPOSIT, WITHDRAWAL, TRANSFER_INTERNAL, TRANSFER_EXTERNAL,
-        MPESA_DEPOSIT, MPESA_WITHDRAWAL, LOAN_DISBURSEMENT, LOAN_PAYMENT,
-        SAVINGS_DEPOSIT, SHARE_CAPITAL_CONTRIBUTION
+        DEPOSIT,
+        WITHDRAWAL,
+        TRANSFER_INTERNAL,
+        TRANSFER_EXTERNAL,
+        MPESA_DEPOSIT,
+        MPESA_WITHDRAWAL,
+        SAVINGS_DEPOSIT,
+        SAVINGS_WITHDRAWAL,
+        LOAN_DISBURSEMENT,
+        LOAN_REPAYMENT,
+        INTEREST_PAYMENT,
+        FEE_PAYMENT,
+        REVERSAL
     }
 
     public enum TransactionStatus {
-        PENDING, COMPLETED, FAILED, CANCELLED, PROCESSING
+        PENDING,
+        PROCESSING,
+        COMPLETED,
+        FAILED,
+        CANCELLED,
+        REVERSED
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        if (fee == null) {
+            fee = BigDecimal.ZERO;
+        }
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
+
+    // Helper methods
+    public BigDecimal getTotalAmount() {
+        return amount.add(fee != null ? fee : BigDecimal.ZERO);
+    }
+
+    public boolean isCompleted() {
+        return status == TransactionStatus.COMPLETED;
+    }
+
+    public boolean isFailed() {
+        return status == TransactionStatus.FAILED;
+    }
+
+    public boolean isPending() {
+        return status == TransactionStatus.PENDING || status == TransactionStatus.PROCESSING;
     }
 }

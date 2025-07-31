@@ -11,6 +11,7 @@ import com.sacco.banking.repository.AccountRepository;
 import com.sacco.banking.repository.MemberRepository;
 import com.sacco.banking.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,6 +26,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AuthService {
 
     private final MemberRepository memberRepository;
@@ -32,6 +34,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider tokenProvider;
+    private final NotificationHelper notificationHelper; // Add notification helper
 
     @Transactional
     public AuthResponse login(LoginRequest loginRequest) {
@@ -47,6 +50,12 @@ public class AuthService {
 
         Member member = memberRepository.findByMemberNumber(loginRequest.getMemberNumber())
                 .orElseThrow(() -> new BadRequestException("Member not found"));
+
+        // Update last login time
+        member.setLastLoginDate(LocalDateTime.now());
+        memberRepository.save(member);
+
+        log.info("Member {} logged in successfully", loginRequest.getMemberNumber());
 
         return AuthResponse.builder()
                 .accessToken(jwt)
@@ -76,6 +85,7 @@ public class AuthService {
         member.setAddress(registerRequest.getAddress());
         member.setOccupation(registerRequest.getOccupation());
         member.setDateJoined(LocalDateTime.now());
+        member.setLastLoginDate(LocalDateTime.now());
         member.setStatus(Member.MemberStatus.ACTIVE);
         member.setCreditScore(700);
 
@@ -83,6 +93,9 @@ public class AuthService {
 
         // Create default accounts
         createDefaultAccounts(savedMember);
+
+        // Send welcome notification
+        notificationHelper.notifyWelcome(savedMember.getMemberNumber(), savedMember.getFirstName());
 
         // Generate JWT token
         Authentication authentication = authenticationManager.authenticate(
@@ -93,6 +106,8 @@ public class AuthService {
         );
 
         String jwt = tokenProvider.generateToken(authentication);
+
+        log.info("New member {} registered successfully", savedMember.getMemberNumber());
 
         return AuthResponse.builder()
                 .accessToken(jwt)
@@ -111,7 +126,12 @@ public class AuthService {
         savingsAccount.setInterestRate(new BigDecimal("0.05"));
         savingsAccount.setMember(member);
         savingsAccount.setStatus(Account.AccountStatus.ACTIVE);
+        savingsAccount.setCreatedDate(LocalDateTime.now());
+        savingsAccount.setUpdatedDate(LocalDateTime.now());
         accountRepository.save(savingsAccount);
+
+        // Notify account creation
+        notificationHelper.notifyAccountCreated(member.getMemberNumber(), "SAVINGS");
 
         // Current Account
         Account currentAccount = new Account();
@@ -122,7 +142,12 @@ public class AuthService {
         currentAccount.setInterestRate(BigDecimal.ZERO);
         currentAccount.setMember(member);
         currentAccount.setStatus(Account.AccountStatus.ACTIVE);
+        currentAccount.setCreatedDate(LocalDateTime.now());
+        currentAccount.setUpdatedDate(LocalDateTime.now());
         accountRepository.save(currentAccount);
+
+        // Notify account creation
+        notificationHelper.notifyAccountCreated(member.getMemberNumber(), "CURRENT");
 
         // Share Capital Account
         Account shareCapitalAccount = new Account();
@@ -133,7 +158,51 @@ public class AuthService {
         shareCapitalAccount.setInterestRate(new BigDecimal("0.08"));
         shareCapitalAccount.setMember(member);
         shareCapitalAccount.setStatus(Account.AccountStatus.ACTIVE);
+        shareCapitalAccount.setCreatedDate(LocalDateTime.now());
+        shareCapitalAccount.setUpdatedDate(LocalDateTime.now());
         accountRepository.save(shareCapitalAccount);
+
+        // Notify account creation
+        notificationHelper.notifyAccountCreated(member.getMemberNumber(), "SHARE_CAPITAL");
+
+        log.info("Created default accounts for member {}", member.getMemberNumber());
+    }
+
+    @Transactional
+    public void changePassword(String memberNumber, String oldPassword, String newPassword) {
+        Member member = memberRepository.findByMemberNumber(memberNumber)
+                .orElseThrow(() -> new BadRequestException("Member not found"));
+
+        // Verify old password
+        if (!passwordEncoder.matches(oldPassword, member.getPassword())) {
+            throw new BadRequestException("Current password is incorrect");
+        }
+
+        // Update password
+        member.setPassword(passwordEncoder.encode(newPassword));
+        member.setUpdatedDate(LocalDateTime.now());
+        memberRepository.save(member);
+
+        // Send notification
+        notificationHelper.notifyPasswordChanged(memberNumber);
+
+        log.info("Password changed for member {}", memberNumber);
+    }
+
+    @Transactional
+    public void resetPassword(String memberNumber, String newPassword) {
+        Member member = memberRepository.findByMemberNumber(memberNumber)
+                .orElseThrow(() -> new BadRequestException("Member not found"));
+
+        // Update password
+        member.setPassword(passwordEncoder.encode(newPassword));
+        member.setUpdatedDate(LocalDateTime.now());
+        memberRepository.save(member);
+
+        // Send security alert notification
+        notificationHelper.notifySecurityAlert(memberNumber, "Your password has been reset. If you didn't request this, please contact support immediately.");
+
+        log.info("Password reset for member {}", memberNumber);
     }
 
     private String generateAccountNumber(String prefix) {
