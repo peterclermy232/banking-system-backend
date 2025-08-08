@@ -6,6 +6,8 @@ import com.sacco.banking.dto.response.LoanResponse;
 import com.sacco.banking.dto.response.LoanCalculationResponse;
 import com.sacco.banking.entity.Loan;
 import com.sacco.banking.entity.Member;
+import com.sacco.banking.enums.LoanStatus;
+import com.sacco.banking.enums.LoanType;
 import com.sacco.banking.exception.BadRequestException;
 import com.sacco.banking.repository.LoanRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +43,7 @@ public class LoanService {
 
         // Check for existing active loans
         long activeLoanCount = loanRepository.countByMemberAndStatusIn(member,
-                List.of(Loan.LoanStatus.ACTIVE, Loan.LoanStatus.DISBURSED));
+                List.of(LoanStatus.ACTIVE, LoanStatus.DISBURSED));
 
         if (activeLoanCount >= 3) {
             throw new BadRequestException("Maximum number of active loans reached");
@@ -50,7 +52,7 @@ public class LoanService {
         // Create loan application
         Loan loan = new Loan();
         loan.setLoanNumber(generateLoanNumber());
-        loan.setLoanType(Loan.LoanType.valueOf(request.getLoanType()));
+        loan.setLoanType(LoanType.valueOf(request.getLoanType()));
         loan.setPrincipalAmount(request.getAmount());
         loan.setCurrentBalance(request.getAmount());
         loan.setInterestRate(getLoanInterestRate(request.getLoanType(), request.getAmount()));
@@ -59,7 +61,7 @@ public class LoanService {
         loan.setPurpose(request.getPurpose());
         loan.setMember(member);
         loan.setApplicationDate(LocalDateTime.now());
-        loan.setStatus(Loan.LoanStatus.PENDING);
+        loan.setStatus(LoanStatus.PENDING);
 
         // Calculate monthly payment
         BigDecimal monthlyPayment = calculateMonthlyPayment(

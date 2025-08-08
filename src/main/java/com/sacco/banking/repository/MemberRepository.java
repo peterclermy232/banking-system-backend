@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Repository
@@ -38,4 +39,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
             String firstName, String lastName, String email, Pageable pageable);
 
     long countByStatus(Member.MemberStatus memberStatus);
+
+    @Query("SELECT COALESCE(SUM(m.totalSavings), 0) FROM Member m WHERE m.status != 'TERMINATED'")
+    BigDecimal getTotalSavingsSum();
 }

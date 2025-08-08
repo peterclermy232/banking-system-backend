@@ -1,6 +1,7 @@
 package com.sacco.banking.dto.request;
 
 import com.sacco.banking.entity.Notification;
+import com.sacco.banking.enums.NotificationType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -20,7 +21,7 @@ public class NotificationCreateRequest {
     private String message;
 
     @NotNull(message = "Type is required")
-    private Notification.NotificationType type;
+    private NotificationType type;
 
     private String referenceId;
     private String referenceType;

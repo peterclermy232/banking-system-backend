@@ -1,5 +1,7 @@
 package com.sacco.banking.entity;
 
+import com.sacco.banking.enums.AccountStatus;
+import com.sacco.banking.enums.AccountType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -53,22 +55,6 @@ public class Account {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
-    public enum AccountType {
-        SAVINGS,
-        CURRENT,
-        SHARE_CAPITAL,
-        FIXED_DEPOSIT
-    }
-
-    public enum AccountStatus {
-        ACTIVE,
-        INACTIVE,
-        FROZEN,
-        BLOCKED,
-        CLOSED,
-        SUSPENDED
-    }
 
     @PrePersist
     protected void onCreate() {

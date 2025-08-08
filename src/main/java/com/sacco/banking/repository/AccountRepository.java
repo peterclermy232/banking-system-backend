@@ -2,6 +2,8 @@ package com.sacco.banking.repository;
 
 import com.sacco.banking.entity.Account;
 import com.sacco.banking.entity.Member;
+import com.sacco.banking.enums.AccountStatus;
+import com.sacco.banking.enums.AccountType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -23,25 +25,25 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
             "LOWER(a.member.memberNumber) LIKE LOWER(CONCAT('%', :search, '%'))")
     Page<Account> findAccountsByMemberSearch(@Param("search") String search, Pageable pageable);
 
-    boolean existsByMemberMemberNumberAndAccountType(String memberNumber, Account.AccountType accountType);
+    boolean existsByMemberMemberNumberAndAccountType(String memberNumber, AccountType accountType);
 
-    List<Account> findByMemberMemberNumberAndStatusOrderByCreatedDateDesc(String memberNumber, Account.AccountStatus status);
+    List<Account> findByMemberMemberNumberAndStatusOrderByCreatedDateDesc(String memberNumber,AccountStatus status);
 
     Optional<Account> findByIdAndMemberMemberNumber(Long id, String memberNumber);
 
     Optional<Account> findByAccountNumberAndMemberMemberNumber(String accountNumber, String memberNumber);
 
-    List<Account> findByMemberMemberNumberAndStatus(String memberNumber, Account.AccountStatus status);
+    List<Account> findByMemberMemberNumberAndStatus(String memberNumber, AccountStatus status);
 
     Page<Account> findAllByOrderByCreatedDateDesc(Pageable pageable);
 
-    List<Account> findByStatus(Account.AccountStatus status);
+    List<Account> findByStatus(AccountStatus status);
 
-    List<Account> findByAccountTypeAndStatus(Account.AccountType accountType, Account.AccountStatus status);
+    List<Account> findByAccountTypeAndStatus(AccountType accountType, AccountStatus status);
     // ✅ This resolves: findByAccountNumber(...)
     Optional<Account> findByAccountNumber(String accountNumber);
 
     // ✅ This resolves: findFirstByMemberAndAccountType(...)
-    Optional<Account> findFirstByMemberAndAccountType(Member member, Account.AccountType accountType);
+    Optional<Account> findFirstByMemberAndAccountType(Member member, AccountType accountType);
     List<Account> findByMember(Member member);
 }

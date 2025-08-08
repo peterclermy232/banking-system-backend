@@ -1,0 +1,18 @@
+package com.sacco.banking.enums;
+
+public enum TransactionType {
+    DEPOSIT,
+    WITHDRAWAL,
+    TRANSFER_INTERNAL,
+    TRANSFER_EXTERNAL,
+    TRANSFER,
+    MPESA_DEPOSIT,
+    MPESA_WITHDRAWAL,
+    SAVINGS_DEPOSIT,
+    SAVINGS_WITHDRAWAL,
+    LOAN_DISBURSEMENT,
+    LOAN_REPAYMENT,
+    INTEREST_PAYMENT,
+    FEE_PAYMENT,
+    REVERSAL
+}

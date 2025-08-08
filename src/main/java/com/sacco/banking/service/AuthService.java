@@ -6,6 +6,8 @@ import com.sacco.banking.dto.response.AuthResponse;
 import com.sacco.banking.dto.response.MemberResponse;
 import com.sacco.banking.entity.Account;
 import com.sacco.banking.entity.Member;
+import com.sacco.banking.enums.AccountStatus;
+import com.sacco.banking.enums.AccountType;
 import com.sacco.banking.exception.BadRequestException;
 import com.sacco.banking.repository.AccountRepository;
 import com.sacco.banking.repository.MemberRepository;
@@ -120,12 +122,12 @@ public class AuthService {
         // Savings Account
         Account savingsAccount = new Account();
         savingsAccount.setAccountNumber(generateAccountNumber("SAV"));
-        savingsAccount.setAccountType(Account.AccountType.SAVINGS);
+        savingsAccount.setAccountType(AccountType.SAVINGS);
         savingsAccount.setBalance(BigDecimal.ZERO);
         savingsAccount.setMinimumBalance(new BigDecimal("1000"));
         savingsAccount.setInterestRate(new BigDecimal("0.05"));
         savingsAccount.setMember(member);
-        savingsAccount.setStatus(Account.AccountStatus.ACTIVE);
+        savingsAccount.setStatus(AccountStatus.ACTIVE);
         savingsAccount.setCreatedDate(LocalDateTime.now());
         savingsAccount.setUpdatedDate(LocalDateTime.now());
         accountRepository.save(savingsAccount);
@@ -136,12 +138,12 @@ public class AuthService {
         // Current Account
         Account currentAccount = new Account();
         currentAccount.setAccountNumber(generateAccountNumber("CUR"));
-        currentAccount.setAccountType(Account.AccountType.CURRENT);
+        currentAccount.setAccountType(AccountType.CURRENT);
         currentAccount.setBalance(BigDecimal.ZERO);
         currentAccount.setMinimumBalance(BigDecimal.ZERO);
         currentAccount.setInterestRate(BigDecimal.ZERO);
         currentAccount.setMember(member);
-        currentAccount.setStatus(Account.AccountStatus.ACTIVE);
+        currentAccount.setStatus(AccountStatus.ACTIVE);
         currentAccount.setCreatedDate(LocalDateTime.now());
         currentAccount.setUpdatedDate(LocalDateTime.now());
         accountRepository.save(currentAccount);
@@ -152,12 +154,12 @@ public class AuthService {
         // Share Capital Account
         Account shareCapitalAccount = new Account();
         shareCapitalAccount.setAccountNumber(generateAccountNumber("SHR"));
-        shareCapitalAccount.setAccountType(Account.AccountType.SHARE_CAPITAL);
+        shareCapitalAccount.setAccountType(AccountType.SHARE_CAPITAL);
         shareCapitalAccount.setBalance(BigDecimal.ZERO);
         shareCapitalAccount.setMinimumBalance(new BigDecimal("5000"));
         shareCapitalAccount.setInterestRate(new BigDecimal("0.08"));
         shareCapitalAccount.setMember(member);
-        shareCapitalAccount.setStatus(Account.AccountStatus.ACTIVE);
+        shareCapitalAccount.setStatus(AccountStatus.ACTIVE);
         shareCapitalAccount.setCreatedDate(LocalDateTime.now());
         shareCapitalAccount.setUpdatedDate(LocalDateTime.now());
         accountRepository.save(shareCapitalAccount);

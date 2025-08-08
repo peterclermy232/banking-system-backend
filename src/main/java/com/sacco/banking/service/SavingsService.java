@@ -5,6 +5,10 @@ import com.sacco.banking.dto.request.SavingsDepositRequest;
 import com.sacco.banking.dto.response.SavingsGoalResponse;
 import com.sacco.banking.dto.response.TransactionResponse;
 import com.sacco.banking.entity.*;
+import com.sacco.banking.enums.AccountType;
+import com.sacco.banking.enums.NotificationType;
+import com.sacco.banking.enums.TransactionStatus;
+import com.sacco.banking.enums.TransactionType;
 import com.sacco.banking.exception.BadRequestException;
 import com.sacco.banking.exception.InsufficientFundsException;
 import com.sacco.banking.repository.AccountRepository;
@@ -64,7 +68,7 @@ public class SavingsService {
                 member.getMemberNumber(),
                 "Savings Goal Created",
                 message,
-                Notification.NotificationType.SUCCESS,
+                NotificationType.SUCCESS,
                 1
         );
 
@@ -79,7 +83,7 @@ public class SavingsService {
                 .orElseThrow(() -> new BadRequestException("Source account not found"));
 
         // Use the method that returns Optional<Account>
-        Account savingsAccount = accountRepository.findFirstByMemberAndAccountType(member, Account.AccountType.SAVINGS)
+        Account savingsAccount = accountRepository.findFirstByMemberAndAccountType(member, AccountType.SAVINGS)
                 .orElseThrow(() -> new BadRequestException("Savings account not found"));
 
         // Verify ownership
@@ -101,14 +105,14 @@ public class SavingsService {
         // Create transaction
         Transaction transaction = new Transaction();
         transaction.setTransactionId(generateTransactionId());
-        transaction.setTransactionType(Transaction.TransactionType.SAVINGS_DEPOSIT);
+        transaction.setTransactionType(TransactionType.SAVINGS_DEPOSIT);
         transaction.setAmount(request.getAmount());
         transaction.setFee(BigDecimal.ZERO);
         transaction.setDescription("Savings deposit" + (request.getReference() != null ? " - " + request.getReference() : ""));
         transaction.setReference(request.getReference());
         transaction.setFromAccount(fromAccount);
         transaction.setToAccount(savingsAccount);
-        transaction.setStatus(Transaction.TransactionStatus.COMPLETED);
+        transaction.setStatus(TransactionStatus.COMPLETED);
         transaction.setCreatedAt(LocalDateTime.now());
 
         // Update balances
@@ -153,7 +157,7 @@ public class SavingsService {
                         member.getMemberNumber(),
                         "Savings Goal Completed! 🎉",
                         message,
-                        Notification.NotificationType.SUCCESS,
+                        NotificationType.SUCCESS,
                         2
                 );
             } else if (progressPercentage.compareTo(new BigDecimal("50")) >= 0 &&
@@ -167,7 +171,7 @@ public class SavingsService {
                         member.getMemberNumber(),
                         "Savings Milestone Reached!",
                         message,
-                        Notification.NotificationType.SUCCESS,
+                        NotificationType.SUCCESS,
                         1
                 );
             } else if (progressPercentage.compareTo(new BigDecimal("75")) >= 0 &&
@@ -181,7 +185,7 @@ public class SavingsService {
                         member.getMemberNumber(),
                         "Savings Milestone Reached!",
                         message,
-                        Notification.NotificationType.SUCCESS,
+                        NotificationType.SUCCESS,
                         1
                 );
             }
@@ -203,7 +207,7 @@ public class SavingsService {
                 member.getMemberNumber(),
                 "Savings Deposit Successful",
                 depositMessage,
-                Notification.NotificationType.SUCCESS,
+                NotificationType.SUCCESS,
                 1
         );
 
@@ -269,7 +273,7 @@ public class SavingsService {
                 member.getMemberNumber(),
                 "Savings Goal Updated",
                 message,
-                Notification.NotificationType.INFO,
+                NotificationType.INFO,
                 1
         );
 
@@ -292,7 +296,7 @@ public class SavingsService {
                 member.getMemberNumber(),
                 "Savings Goal Deleted",
                 message,
-                Notification.NotificationType.INFO,
+                NotificationType.INFO,
                 1
         );
 
@@ -309,7 +313,7 @@ public class SavingsService {
 
     @Transactional(readOnly = true)
     public BigDecimal getTotalSavingsAmount(Member member) {
-        Account savingsAccount = accountRepository.findFirstByMemberAndAccountType(member, Account.AccountType.SAVINGS)
+        Account savingsAccount = accountRepository.findFirstByMemberAndAccountType(member, AccountType.SAVINGS)
                 .orElse(null);
 
         return savingsAccount != null ? savingsAccount.getBalance() : BigDecimal.ZERO;
@@ -349,7 +353,7 @@ public class SavingsService {
                         goal.getMember().getMemberNumber(),
                         "Savings Goal Deadline Approaching",
                         message,
-                        Notification.NotificationType.WARNING,
+                        NotificationType.WARNING,
                         2
                 );
             } else if (remainingAmount.compareTo(BigDecimal.ZERO) > 0) {
@@ -361,7 +365,7 @@ public class SavingsService {
                         goal.getMember().getMemberNumber(),
                         "Savings Goal Reminder",
                         message,
-                        Notification.NotificationType.INFO,
+                        NotificationType.INFO,
                         1
                 );
             }

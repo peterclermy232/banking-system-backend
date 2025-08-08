@@ -46,16 +46,6 @@ public class SavingsGoal {
 
     private LocalDateTime completedAt;
 
-    public void setCompletedAt(Object o) {
-    }
-    public LocalDateTime getCompletedAt() {
-        return completedAt;
-    }
-
-    public void setCompletedAt(LocalDateTime completedAt) {
-        this.completedAt = completedAt;
-    }
-
     public enum GoalStatus {
         ACTIVE, COMPLETED, PAUSED, CANCELLED
     }

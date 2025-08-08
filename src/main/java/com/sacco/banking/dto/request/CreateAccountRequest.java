@@ -1,6 +1,7 @@
 package com.sacco.banking.dto.request;
 
-import com.sacco.banking.entity.Account;
+
+import com.sacco.banking.enums.AccountType;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.AllArgsConstructor;
 public class CreateAccountRequest {
 
     @NotNull(message = "Account type is required")
-    private Account.AccountType accountType;
+    private AccountType accountType;
 
     private String description;
 }

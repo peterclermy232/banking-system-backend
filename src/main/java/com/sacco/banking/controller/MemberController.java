@@ -7,6 +7,7 @@ import com.sacco.banking.repository.MemberRepository;
 import com.sacco.banking.security.UserPrincipal;
 import com.sacco.banking.service.MemberService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -16,12 +17,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+
 @RestController
 @RequestMapping("/members")
 @RequiredArgsConstructor
 @Tag(name = "Members", description = "Member management APIs")
 @SecurityRequirement(name = "Bearer Authentication")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class MemberController {
 
     private final MemberService memberService;
@@ -61,4 +63,39 @@ public class MemberController {
         MemberResponse member = memberService.getMemberByNumber(memberNumber);
         return ResponseEntity.ok(member);
     }
+
+    @PatchMapping("/{memberNumber}/suspend")
+    @Operation(summary = "Suspend member", description = "Suspend a member account")
+    public ResponseEntity<MemberResponse> suspendMember(
+            @Parameter(name = "memberNumber", description = "Member number")
+            @PathVariable String memberNumber) {
+        MemberResponse suspendedMember = memberService.suspendMember(memberNumber);
+        return ResponseEntity.ok(suspendedMember);
+    }
+
+    @PatchMapping("/{memberNumber}/activate")
+    @Operation(summary = "Activate member", description = "Activate a suspended member account")
+    public ResponseEntity<MemberResponse> activateMember(
+            @Parameter(name = "memberNumber", description = "Member number")
+            @PathVariable String memberNumber) {
+        MemberResponse activatedMember = memberService.activateMember(memberNumber);
+        return ResponseEntity.ok(activatedMember);
+    }
+
+    @DeleteMapping("/{memberNumber}")
+    @Operation(summary = "Delete member", description = "Delete a member account (soft delete)")
+    public ResponseEntity<Void> deleteMember(
+            @Parameter(name = "memberNumber", description = "Member number")
+            @PathVariable String memberNumber) {
+        memberService.deleteMember(memberNumber);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/total-savings")
+    @Operation(summary = "Get total savings", description = "Retrieve the sum of all members' total savings")
+    public ResponseEntity<BigDecimal> getTotalSavings() {
+        BigDecimal totalSavings = memberService.getTotalSavings();
+        return ResponseEntity.ok(totalSavings);
+    }
+
 }

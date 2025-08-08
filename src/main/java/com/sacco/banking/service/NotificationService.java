@@ -4,6 +4,7 @@ import com.sacco.banking.dto.request.NotificationCreateRequest;
 import com.sacco.banking.dto.response.NotificationCountResponse;
 import com.sacco.banking.dto.response.NotificationResponse;
 import com.sacco.banking.entity.Notification;
+import com.sacco.banking.enums.NotificationType;
 import com.sacco.banking.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -117,7 +118,7 @@ public class NotificationService {
         request.setMemberNumber(memberNumber);
         request.setTitle(title);
         request.setMessage(message);
-        request.setType(Notification.NotificationType.SUCCESS);
+        request.setType(NotificationType.SUCCESS);
         request.setReferenceId(transactionId);
         request.setReferenceType("TRANSACTION");
         request.setPriority(2);
@@ -127,21 +128,21 @@ public class NotificationService {
 
     @Async
     public void createAccountNotification(String memberNumber, String accountType, String message,
-                                          Notification.NotificationType type) {
+                                          NotificationType type) {
         NotificationCreateRequest request = new NotificationCreateRequest();
         request.setMemberNumber(memberNumber);
         request.setTitle("Account Update");
         request.setMessage(message);
         request.setType(type);
         request.setReferenceType("ACCOUNT");
-        request.setPriority(type == Notification.NotificationType.ERROR ? 3 : 1);
+        request.setPriority(type == NotificationType.ERROR ? 3 : 1);
 
         createNotification(request);
     }
 
     @Async
     public void createLoanNotification(String memberNumber, String loanId, String status,
-                                       Double amount, Notification.NotificationType type) {
+                                       Double amount, NotificationType type) {
         String title = "Loan Update";
         String message = String.format("Your loan application for KSH %.2f is now %s.", amount, status.toLowerCase());
 
@@ -159,7 +160,7 @@ public class NotificationService {
 
     @Async
     public void createSystemNotification(String memberNumber, String title, String message,
-                                         Notification.NotificationType type, Integer priority) {
+                                         NotificationType type, Integer priority) {
         NotificationCreateRequest request = new NotificationCreateRequest();
         request.setMemberNumber(memberNumber);
         request.setTitle(title);

@@ -3,6 +3,8 @@ package com.sacco.banking.service;
 import com.sacco.banking.dto.request.TransferRequest;
 import com.sacco.banking.dto.response.TransactionResponse;
 import com.sacco.banking.entity.*;
+import com.sacco.banking.enums.TransactionStatus;
+import com.sacco.banking.enums.TransactionType;
 import com.sacco.banking.exception.BadRequestException;
 import com.sacco.banking.exception.InsufficientFundsException;
 import com.sacco.banking.repository.AccountRepository;
@@ -47,14 +49,14 @@ public class TransferService {
         // Create transaction
         Transaction transaction = new Transaction();
         transaction.setTransactionId(generateTransactionId());
-        transaction.setTransactionType(Transaction.TransactionType.TRANSFER_INTERNAL);
+        transaction.setTransactionType(TransactionType.TRANSFER_INTERNAL);
         transaction.setAmount(request.getAmount());
         transaction.setFee(fee);
         transaction.setDescription(request.getDescription());
         transaction.setReference(request.getReference());
         transaction.setFromAccount(fromAccount);
         transaction.setToAccount(toAccount);
-        transaction.setStatus(Transaction.TransactionStatus.COMPLETED);
+        transaction.setStatus(TransactionStatus.COMPLETED);
 
         // Update balances
         fromAccount.setBalance(fromAccount.getBalance().subtract(totalDebit));
@@ -89,14 +91,14 @@ public class TransferService {
         // Create transaction
         Transaction transaction = new Transaction();
         transaction.setTransactionId(generateTransactionId());
-        transaction.setTransactionType(Transaction.TransactionType.TRANSFER_EXTERNAL);
+        transaction.setTransactionType(TransactionType.TRANSFER_EXTERNAL);
         transaction.setAmount(request.getAmount());
         transaction.setFee(fee);
         transaction.setDescription(request.getDescription());
         transaction.setReference(request.getReference());
         transaction.setFromAccount(fromAccount);
         transaction.setExternalReference(request.getToAccountNumber());
-        transaction.setStatus(Transaction.TransactionStatus.PROCESSING);
+        transaction.setStatus(TransactionStatus.PROCESSING);
 
         // Update balance
         fromAccount.setBalance(fromAccount.getBalance().subtract(totalDebit));
@@ -106,7 +108,7 @@ public class TransferService {
 
         // TODO: Integrate with external banking API
         // For now, mark as completed
-        savedTransaction.setStatus(Transaction.TransactionStatus.COMPLETED);
+        savedTransaction.setStatus(TransactionStatus.COMPLETED);
         transactionRepository.save(savedTransaction);
 
         return TransactionResponse.fromEntity(savedTransaction);
@@ -133,14 +135,14 @@ public class TransferService {
         // Create transaction
         Transaction transaction = new Transaction();
         transaction.setTransactionId(generateTransactionId());
-        transaction.setTransactionType(Transaction.TransactionType.MPESA_WITHDRAWAL);
+        transaction.setTransactionType(TransactionType.MPESA_WITHDRAWAL);
         transaction.setAmount(request.getAmount());
         transaction.setFee(fee);
         transaction.setDescription(request.getDescription());
         transaction.setReference(request.getReference());
         transaction.setFromAccount(fromAccount);
         transaction.setExternalReference(request.getToAccountNumber()); // M-Pesa number
-        transaction.setStatus(Transaction.TransactionStatus.PROCESSING);
+        transaction.setStatus(TransactionStatus.PROCESSING);
 
         // Update balance
         fromAccount.setBalance(fromAccount.getBalance().subtract(totalDebit));
@@ -157,13 +159,13 @@ public class TransferService {
             );
 
             savedTransaction.setMpesaReceiptNumber(mpesaReceiptNumber);
-            savedTransaction.setStatus(Transaction.TransactionStatus.COMPLETED);
+            savedTransaction.setStatus(TransactionStatus.COMPLETED);
         } catch (Exception e) {
             // Reverse the transaction
             fromAccount.setBalance(fromAccount.getBalance().add(totalDebit));
             accountRepository.save(fromAccount);
 
-            savedTransaction.setStatus(Transaction.TransactionStatus.FAILED);
+            savedTransaction.setStatus(TransactionStatus.FAILED);
         }
 
         transactionRepository.save(savedTransaction);

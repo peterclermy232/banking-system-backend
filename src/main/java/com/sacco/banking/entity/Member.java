@@ -68,18 +68,17 @@ public class Member {
     private String occupation;
     private LocalDateTime dateJoined;
 
-    @Column(name = "share_capital", nullable = false)
+    @Column(name = "share_capital", nullable = false, precision = 19, scale = 2)
     private BigDecimal shareCapital;
 
+    @Column(name = "savings_balance", nullable = false, precision = 19, scale = 2)
+    private BigDecimal savingsBalance = BigDecimal.ZERO;
+
+    @Column(name = "total_savings", nullable = false, precision = 19, scale = 2)
+    private BigDecimal totalSavings = BigDecimal.ZERO;
+
+
     private int creditScore; // Make sure this field exists
-
-    public void setCreditScore(int creditScore) {
-        this.creditScore = creditScore;
-    }
-
-    public int getCreditScore() {
-        return creditScore;
-    }
 
 
     public enum MemberStatus {
@@ -93,10 +92,20 @@ public class Member {
     protected void onCreate() {
         registrationDate = LocalDateTime.now();
         updatedDate = LocalDateTime.now();
+        if (shareCapital == null) {
+            shareCapital = BigDecimal.ZERO;
+        }
+        if (savingsBalance == null) {
+            savingsBalance = BigDecimal.ZERO;
+        }
+        if (totalSavings == null) {
+            totalSavings = BigDecimal.ZERO;
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         updatedDate = LocalDateTime.now();
     }
+
 }

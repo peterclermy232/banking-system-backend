@@ -10,6 +10,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 public class MemberService {
@@ -41,4 +43,40 @@ public class MemberService {
 
         return MemberResponse.fromEntity(member);
     }
+
+    public MemberResponse suspendMember(String memberNumber) {
+        Member member = memberRepository.findByMemberNumber(memberNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with number: " + memberNumber));
+
+        member.setStatus(Member.MemberStatus.SUSPENDED);
+        memberRepository.save(member);
+
+        return MemberResponse.fromEntity(member);
+    }
+
+    public MemberResponse activateMember(String memberNumber) {
+        Member member = memberRepository.findByMemberNumber(memberNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with number: " + memberNumber));
+
+        member.setStatus(Member.MemberStatus.ACTIVE);
+        memberRepository.save(member);
+
+        return MemberResponse.fromEntity(member);
+    }
+
+    public void deleteMember(String memberNumber) {
+        Member member = memberRepository.findByMemberNumber(memberNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Member not found with number: " + memberNumber));
+
+        // For soft delete, you can mark the member as TERMINATED
+        member.setStatus(Member.MemberStatus.TERMINATED);
+        memberRepository.save(member);
+    }
+
+    // New method for total savings
+    public BigDecimal getTotalSavings() {
+        BigDecimal total = memberRepository.getTotalSavingsSum();
+        return total != null ? total : BigDecimal.ZERO;
+    }
+
 }

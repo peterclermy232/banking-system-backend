@@ -1,5 +1,6 @@
 package com.sacco.banking.entity;
 
+import com.sacco.banking.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -63,13 +64,11 @@ public class Notification {
     @Column(name = "expires_at")
     private LocalDateTime expiresAt;
 
-    public enum NotificationType {
-        INFO,
-        SUCCESS,
-        WARNING,
-        ERROR,
-        SYSTEM
-    }
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "notification_type", nullable = false)
+    private NotificationType notificationType;
+
 
     @PrePersist
     protected void onCreate() {

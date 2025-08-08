@@ -3,8 +3,7 @@ package com.sacco.banking.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -54,7 +53,7 @@ public class MpesaService {
                     .contentType(MediaType.APPLICATION_JSON)
                     .bodyValue(stkPushRequest)
                     .retrieve()
-                    .bodyToMono(Map.class)
+                    .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                     .block();
 
             if (response != null && "0".equals(response.get("ResponseCode"))) {
@@ -69,6 +68,7 @@ public class MpesaService {
         }
     }
 
+
     private String getAccessToken() {
         String credentials = consumerKey + ":" + consumerSecret;
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
@@ -77,11 +77,16 @@ public class MpesaService {
                 .uri(mpesaApiUrl + "/oauth/v1/generate?grant_type=client_credentials")
                 .header("Authorization", "Basic " + encodedCredentials)
                 .retrieve()
-                .bodyToMono(Map.class)
+                .bodyToMono(new ParameterizedTypeReference<Map<String, Object>>() {})
                 .block();
+
+        if (response == null || response.get("access_token") == null) {
+            throw new RuntimeException("Failed to retrieve access token from M-Pesa API");
+        }
 
         return (String) response.get("access_token");
     }
+
 
     private Map<String, Object> prepareStkPushRequest(String phoneNumber, BigDecimal amount, String description) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));

@@ -1,6 +1,7 @@
 package com.sacco.banking.service;
 
 import com.sacco.banking.entity.Notification;
+import com.sacco.banking.enums.NotificationType;
 import com.sacco.banking.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,10 +30,10 @@ public class NotificationHelper {
         String title = "New Account Created";
         String message = String.format("Your %s account has been successfully created and is now active.", accountType);
 
-        createNotification(memberNumber, title, message, Notification.NotificationType.SUCCESS, 1);
+        createNotification(memberNumber, title, message, NotificationType.SUCCESS, 1);
     }
 
-    public void notifyAccountNotification(String memberNumber, String accountType, String message, Notification.NotificationType type) {
+    public void notifyAccountNotification(String memberNumber, String accountType, String message, NotificationType type) {
         String title = "Account Notification";
         createNotification(memberNumber, title, message, type, 2);
     }
@@ -41,14 +42,14 @@ public class NotificationHelper {
         String title = "Low Balance Alert";
         String message = String.format("Your %s account balance is low: KSH %.2f. Please consider making a deposit.", accountType, balance);
 
-        createNotification(memberNumber, title, message, Notification.NotificationType.WARNING, 3);
+        createNotification(memberNumber, title, message, NotificationType.WARNING, 3);
     }
 
-    public void notifySystemNotification(String memberNumber, String title, String message, Notification.NotificationType type, int priority) {
+    public void notifySystemNotification(String memberNumber, String title, String message, NotificationType type, int priority) {
         createNotification(memberNumber, title, message, type, priority);
     }
 
-    private void createNotification(String memberNumber, String title, String message, Notification.NotificationType type, int priority) {
+    private void createNotification(String memberNumber, String title, String message,NotificationType type, int priority) {
         try {
             Notification notification = Notification.builder()
                     .memberNumber(memberNumber)

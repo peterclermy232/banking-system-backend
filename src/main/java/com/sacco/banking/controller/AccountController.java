@@ -3,6 +3,7 @@ package com.sacco.banking.controller;
 import com.sacco.banking.dto.response.AccountResponse;
 import com.sacco.banking.dto.response.AccountSummaryResponse;
 import com.sacco.banking.entity.Member;
+import com.sacco.banking.security.UserPrincipal;
 import com.sacco.banking.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,17 +26,13 @@ public class AccountController {
      * This is what your Angular service calls: getMemberAccounts()
      */
     @GetMapping
-    public ResponseEntity<List<AccountResponse>> getMemberAccounts(@AuthenticationPrincipal Member member) {
-        try {
-            log.info("Getting accounts for member: {}", member.getMemberNumber());
-            List<AccountResponse> accounts = accountService.getAccounts(member.getMemberNumber());
-            log.info("Found {} accounts for member: {}", accounts.size(), member.getMemberNumber());
-            return ResponseEntity.ok(accounts);
-        } catch (Exception e) {
-            log.error("Error getting accounts for member {}: {}", member.getMemberNumber(), e.getMessage(), e);
-            throw e;
-        }
+    public ResponseEntity<List<AccountResponse>> getMemberAccounts(@AuthenticationPrincipal UserPrincipal principal) {
+        String memberNumber = principal.getMemberNumber();
+        log.info("Getting accounts for member: {}", memberNumber);
+        List<AccountResponse> accounts = accountService.getAccounts(memberNumber);
+        return ResponseEntity.ok(accounts);
     }
+
 
     /**
      * Get accounts available for deposit (excludes savings account from source options)

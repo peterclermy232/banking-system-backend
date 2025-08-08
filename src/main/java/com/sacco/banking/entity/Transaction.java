@@ -1,5 +1,7 @@
 package com.sacco.banking.entity;
 
+import com.sacco.banking.enums.TransactionStatus;
+import com.sacco.banking.enums.TransactionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -73,31 +75,6 @@ public class Transaction {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "savings_goal_id")
     private SavingsGoal savingsGoal;
-
-    public enum TransactionType {
-        DEPOSIT,
-        WITHDRAWAL,
-        TRANSFER_INTERNAL,
-        TRANSFER_EXTERNAL,
-        MPESA_DEPOSIT,
-        MPESA_WITHDRAWAL,
-        SAVINGS_DEPOSIT,
-        SAVINGS_WITHDRAWAL,
-        LOAN_DISBURSEMENT,
-        LOAN_REPAYMENT,
-        INTEREST_PAYMENT,
-        FEE_PAYMENT,
-        REVERSAL
-    }
-
-    public enum TransactionStatus {
-        PENDING,
-        PROCESSING,
-        COMPLETED,
-        FAILED,
-        CANCELLED,
-        REVERSED
-    }
 
     @PrePersist
     protected void onCreate() {

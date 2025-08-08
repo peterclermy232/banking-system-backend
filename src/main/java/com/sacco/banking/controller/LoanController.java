@@ -26,7 +26,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(name = "Loans", description = "Loan management APIs")
 @SecurityRequirement(name = "Bearer Authentication")
-@CrossOrigin(origins = "*", maxAge = 3600)
 public class LoanController {
 
     private final LoanService loanService;
@@ -74,4 +73,15 @@ public class LoanController {
         LoanResponse loan = loanService.getLoanDetails(loanId, member);
         return ResponseEntity.ok(loan);
     }
+
+    @GetMapping("/types")
+    @Operation(summary = "Get loan types", description = "Retrieve all available loan types")
+    public ResponseEntity<List<String>> getLoanTypes() {
+        List<String> loanTypes = List.of(com.sacco.banking.enums.LoanType.values())
+                .stream()
+                .map(Enum::name)
+                .toList();
+        return ResponseEntity.ok(loanTypes);
+    }
+
 }

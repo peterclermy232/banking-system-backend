@@ -1,5 +1,7 @@
 package com.sacco.banking.entity;
 
+import com.sacco.banking.enums.LoanStatus;
+import com.sacco.banking.enums.LoanType;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +26,7 @@ public class Loan {
     private String loanNumber;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "loan_type", nullable = false)
     private LoanType loanType;
 
     @Column(precision = 15, scale = 2)
@@ -60,11 +63,4 @@ public class Loan {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    public enum LoanType {
-        PERSONAL, BUSINESS, EMERGENCY, ASSET_FINANCING, EDUCATION
-    }
-
-    public enum LoanStatus {
-        PENDING, APPROVED, DISBURSED, ACTIVE, COMPLETED, DEFAULTED, REJECTED
-    }
 }
