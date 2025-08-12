@@ -5,7 +5,10 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
+
 
 @Data
 @Builder
@@ -19,10 +22,13 @@ public class MemberResponse {
     private BigDecimal shareCapital;
     private String status;
     private Integer creditScore;
-    private String nationalId;
+    private String idNumber;
     private String address;
     private String occupation;
     private LocalDateTime dateJoined;
+    private Integer monthlyIncome;
+    private LocalDate dateOfBirth;
+    private List<String> roles;
 
     public static MemberResponse fromEntity(Member member) {
         return MemberResponse.builder()
@@ -35,10 +41,17 @@ public class MemberResponse {
                 .shareCapital(member.getShareCapital())
                 .status(member.getStatus().name())
                 .creditScore(member.getCreditScore())
-                .nationalId(member.getNationalId())
+                .idNumber(member.getIdNumber())
                 .address(member.getAddress())
                 .occupation(member.getOccupation())
                 .dateJoined(member.getDateJoined())
+                .monthlyIncome(member.getMonthlyIncome())
+                .dateOfBirth(member.getDateOfBirth())
+                .roles(
+                        member.getRoles().stream()
+                                .map(role -> role.getName().name()) // Converts enum to String
+                                .toList()
+                )
                 .build();
     }
 }

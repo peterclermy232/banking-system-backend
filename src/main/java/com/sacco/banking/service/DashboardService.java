@@ -71,6 +71,11 @@ public class DashboardService {
                 .monthlyExpenses(monthlyExpenses)
                 .creditScore(member.getCreditScore())
                 .shareCapital(member.getShareCapital())
+                .roles(
+                        member.getRoles().stream()
+                                .map(role -> role.getName().name()) // Converts enum to String
+                                .toList()
+                )
                 .build();
     }
 }

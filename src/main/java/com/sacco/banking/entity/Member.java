@@ -10,7 +10,9 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "members")
@@ -77,9 +79,17 @@ public class Member {
     @Column(name = "total_savings", nullable = false, precision = 19, scale = 2)
     private BigDecimal totalSavings = BigDecimal.ZERO;
 
-
     private int creditScore; // Make sure this field exists
 
+    @Column(name = "monthly_income", nullable = false)
+    private Integer monthlyIncome;
+
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "member_roles",
+            joinColumns = @JoinColumn(name = "member_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
 
     public enum MemberStatus {
         ACTIVE,
@@ -100,6 +110,12 @@ public class Member {
         }
         if (totalSavings == null) {
             totalSavings = BigDecimal.ZERO;
+        }
+        if (monthlyIncome == null) {
+            monthlyIncome = 0;
+        }
+        if (status == null) {
+            status = MemberStatus.ACTIVE;
         }
     }
 

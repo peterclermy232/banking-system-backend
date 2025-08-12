@@ -18,4 +18,5 @@ public class DashboardResponse {
     private BigDecimal monthlyExpenses;
     private Integer creditScore;
     private BigDecimal shareCapital;
+    private List<String> roles;
 }

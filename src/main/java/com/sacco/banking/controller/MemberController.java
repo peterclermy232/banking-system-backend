@@ -1,5 +1,6 @@
 package com.sacco.banking.controller;
 
+import com.sacco.banking.dto.request.UpdateMemberRequest;
 import com.sacco.banking.dto.response.MemberResponse;
 import com.sacco.banking.dto.response.MemberStatsResponse;
 import com.sacco.banking.entity.Member;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -96,6 +98,48 @@ public class MemberController {
     public ResponseEntity<BigDecimal> getTotalSavings() {
         BigDecimal totalSavings = memberService.getTotalSavings();
         return ResponseEntity.ok(totalSavings);
+    }
+
+    @PutMapping("/{memberNumber}")
+    @Operation(summary = "Update member", description = "Update member information")
+    public ResponseEntity<MemberResponse> updateMember(
+            @Parameter(name = "memberNumber", description = "Member number")
+            @PathVariable String memberNumber,
+            @RequestBody @Valid UpdateMemberRequest request) {
+
+        MemberResponse updatedMember = memberService.updateMember(memberNumber, request);
+        return ResponseEntity.ok(updatedMember);
+    }
+
+    @PatchMapping("/{memberNumber}")
+    @Operation(summary = "Partially update member", description = "Partially update member information")
+    public ResponseEntity<MemberResponse> partialUpdateMember(
+            @Parameter(name = "memberNumber", description = "Member number")
+            @PathVariable String memberNumber,
+            @RequestBody UpdateMemberRequest request) {
+
+        MemberResponse updatedMember = memberService.partialUpdateMember(memberNumber, request);
+        return ResponseEntity.ok(updatedMember);
+    }
+
+    @PutMapping("/profile")
+    @Operation(summary = "Update own profile", description = "Update authenticated member's profile")
+    public ResponseEntity<MemberResponse> updateOwnProfile(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody @Valid UpdateMemberRequest request) {
+
+        MemberResponse updatedMember = memberService.updateMember(userPrincipal.getMemberNumber(), request);
+        return ResponseEntity.ok(updatedMember);
+    }
+
+    @PatchMapping("/profile")
+    @Operation(summary = "Partially update own profile", description = "Partially update authenticated member's profile")
+    public ResponseEntity<MemberResponse> partialUpdateOwnProfile(
+            @AuthenticationPrincipal UserPrincipal userPrincipal,
+            @RequestBody UpdateMemberRequest request) {
+
+        MemberResponse updatedMember = memberService.partialUpdateMember(userPrincipal.getMemberNumber(), request);
+        return ResponseEntity.ok(updatedMember);
     }
 
 }

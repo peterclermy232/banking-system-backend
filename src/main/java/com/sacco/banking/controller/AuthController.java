@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200"})
+@CrossOrigin(origins = {"http://localhost:4200", "http://127.0.0.1:4200","https://banking-system-lbj8.onrender.com"})
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor

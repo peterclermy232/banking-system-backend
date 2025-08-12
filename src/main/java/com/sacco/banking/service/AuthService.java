@@ -211,4 +211,5 @@ public class AuthService {
         return prefix + "-" + System.currentTimeMillis() + "-" +
                 UUID.randomUUID().toString().substring(0, 6).toUpperCase();
     }
+
 }

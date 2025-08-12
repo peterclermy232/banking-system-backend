@@ -15,6 +15,9 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Optional<Member> findByMemberNumber(String memberNumber);
+    // Add this method to fetch member with roles eagerly
+    @Query("SELECT m FROM Member m LEFT JOIN FETCH m.roles WHERE m.memberNumber = :memberNumber")
+    Optional<Member> findByMemberNumberWithRoles(@Param("memberNumber") String memberNumber);
 
     Optional<Member> findByEmail(String email);
 
@@ -42,4 +45,6 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Query("SELECT COALESCE(SUM(m.totalSavings), 0) FROM Member m WHERE m.status != 'TERMINATED'")
     BigDecimal getTotalSavingsSum();
+
+
 }

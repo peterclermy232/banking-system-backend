@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("OPTIONS", "/**").permitAll()
                         // Allow all authentication endpoints
                         .requestMatchers("/api/auth/**", "/api/v1/auth/**").permitAll()
+                        .requestMatchers("/roles/**").permitAll()
                         // Allow actuator endpoints if you're using them
                         .requestMatchers("/actuator/**").permitAll()
                         // Protect all other API endpoints
