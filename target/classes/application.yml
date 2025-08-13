@@ -29,6 +29,12 @@ spring:
 jwt:
   secret: ${JWT_SECRET:eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiYWRtaW4iOnRydWUsImlhdCI6MTUxNjIzOTAyMn0.KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30}
   expiration: ${JWT_EXPIRATION:86400000}
+
+admin:
+    registration_code: ${ADMIN_REGISTRATION_CODE:SACCO_ADMIN_2024_SECURE_CODE}
+    max_count: ${ADMIN_MAX_COUNT:10}
+    allowed_domains: ${ADMIN_ALLOWED_DOMAINS:admin.sacco.com,board.sacco.com,executive.sacco.com}
+
 cors:
   allowed-origins:
     - http://localhost:4200

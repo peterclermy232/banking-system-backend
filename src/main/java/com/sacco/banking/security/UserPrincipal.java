@@ -1,67 +1,77 @@
 package com.sacco.banking.security;
 
 import com.sacco.banking.entity.Member;
+import com.sacco.banking.entity.Role;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-public class UserPrincipal extends org.springframework.security.core.userdetails.User {
-
-    private final Member member;
+@Getter
+public class UserPrincipal implements UserDetails {
+    private final String memberNumber;
+    private final String email;
+    private final String password;
+    private final String firstName;
+    private final String lastName;
+    private final Member.MemberStatus status;
+    private final Collection<? extends GrantedAuthority> authorities;
 
     public UserPrincipal(Member member) {
-        super(
-                member.getMemberNumber(),
-                member.getPassword(),
-                mapRolesToAuthorities(member)
-        );
-        this.member = member;
+        this.memberNumber = member.getMemberNumber();
+        this.email = member.getEmail();
+        this.password = member.getPassword();
+        this.firstName = member.getFirstName();
+        this.lastName = member.getLastName();
+        this.status = member.getStatus();
+        this.authorities = mapRolesToAuthorities(member.getRoles());
     }
 
-    private static Collection<? extends GrantedAuthority> mapRolesToAuthorities(Member member) {
-        try {
-            if (member.getRoles() != null && !member.getRoles().isEmpty()) {
-                return member.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName().toString()))
-                        .collect(Collectors.toList());
-            }
-        } catch (Exception e) {
-            // If lazy loading fails, return default role
-            System.err.println("Failed to load roles for member: " + member.getMemberNumber() + ". Using default role.");
-        }
-
-        // Return default role if roles cannot be loaded
-        return Collections.singletonList(new SimpleGrantedAuthority("ROLE_MEMBER"));
+    private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Set<Role> roles) {
+        return roles.stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .collect(Collectors.toSet());
     }
 
-    public String getMemberNumber() {
-        return member.getMemberNumber();
+    @Override
+    public String getUsername() {
+        return memberNumber;
     }
 
-    public Member getMember() {
-        return member;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    // Helper methods with null checks
-    public boolean hasRole(String roleName) {
-        try {
-            return getAuthorities().stream()
-                    .anyMatch(authority -> authority.getAuthority().equals(roleName));
-        } catch (Exception e) {
-            return false;
-        }
+    @Override
+    public boolean isAccountNonLocked() {
+        return status != Member.MemberStatus.SUSPENDED;
     }
 
-    // Helper method to check if user is admin
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return status == Member.MemberStatus.ACTIVE;
+    }
+
     public boolean isAdmin() {
-        return hasRole("ROLE_ADMIN");
+        return authorities.stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
     }
 
-    // Helper method to check if user is member
-    public boolean isMember() {
-        return hasRole("ROLE_MEMBER");
+    public String getFullName() {
+        return firstName + " " + lastName;
     }
+
+//    public boolean isMember() {
+//        return hasRole("ROLE_MEMBER");
+//    }
 }

@@ -26,6 +26,10 @@ public class CustomUserDetailsService implements UserDetailsService {
                 .or(() -> memberRepository.findByEmail(username))
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
 
+        // Check if member is active
+        if (member.getStatus() != Member.MemberStatus.ACTIVE) {
+            throw new UsernameNotFoundException("Account is " + member.getStatus().toString().toLowerCase());
+        }
         // For now, all members have USER role. You can extend this based on your requirements
         return new UserPrincipal(member);
     }

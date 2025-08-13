@@ -33,4 +33,13 @@ public class AuthController {
         AuthResponse authResponse = authService.register(registerRequest);
         return ResponseEntity.ok(authResponse);
     }
+
+    @PostMapping("/register/admin")
+    @Operation(summary = "Admin registration", description = "Register a new admin (requires admin code)")
+    public ResponseEntity<AuthResponse> registerAdmin(
+            @Valid @RequestBody RegisterRequest registerRequest,
+            @RequestParam String adminCode) {
+        AuthResponse authResponse = authService.register(registerRequest, adminCode);
+        return ResponseEntity.ok(authResponse);
+    }
 }
